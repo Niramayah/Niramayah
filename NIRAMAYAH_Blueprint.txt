@@ -1,0 +1,910 @@
+You are building a real-world health-tech platform called “NIRAMAYAH”.
+
+Understand this clearly before writing any code:
+
+NIRAMAYAH is NOT a generic AI website.
+It is a PRE-DIAGNOSTIC CARDIAC RISK ASSESSMENT PLATFORM.
+
+Core Idea:
+The platform helps users understand their POSSIBLE HEART HEALTH RISKS using AI-based analysis of symptoms and health parameters.
+
+It does NOT provide final diagnosis.
+It provides:
+- Risk assessment
+- Early warning indicators
+- Guidance to consult doctors
+
+Target Users:
+1. General public (non-medical users)
+2. Moderators (support + content managers)
+3. Admins (system + AI + business control)
+4. Doctors (future expansion via Pro Plus)
+
+Core Value Proposition:
+- Non-invasive cardiac screening
+- Early detection support
+- AI-powered health insights
+- Affordable and accessible healthcare support
+
+Important Rules:
+- Always show disclaimer: “This is NOT a medical diagnosis”
+- Prioritize clarity over complexity
+- Keep UI simple for non-technical users
+- Data privacy is critical (health data sensitive)
+
+AI Purpose:
+The AI is NOT a chatbot.
+The AI is a structured health risk analysis engine.
+
+It works like:
+INPUT → PROCESS → RISK OUTPUT
+
+User gives:
+- Health data
+- Symptoms
+- Lifestyle info
+
+AI returns:
+- Risk level (Low / Moderate / High / Emergency)
+- Explanation
+- Possible conditions (not diagnosis)
+- Recommended action
+
+Think of it like:
+“AI-assisted triage system for heart health”
+
+Tone of Platform:
+- Professional
+- Trustworthy
+- Medical-tech startup
+- Clean and minimal
+- Not flashy or gimmicky
+
+Goal of Website:
+Convert visitors into users who:
+1. Try AI assessment
+2. Subscribe to plans
+3. Trust the platform
+
+Now that you understand the PRODUCT,
+you can proceed to build the SYSTEM using the next prompt.
+
+Build a complete professional full-stack website for “NIRAMAYAH – Precision Cardiac Diagnosis”.
+
+Use the attached circular NIRAMAYAH logo as the website logo. Use the attached medical poster in the homepage/project showcase section. The website must work locally and also be deployable publicly without major changes.
+
+IMPORTANT MEDICAL SAFETY:
+This platform must NOT claim final medical diagnosis. The AI result must be shown as “risk assessment / screening support only” with clear disclaimer: “Not a substitute for professional medical advice, diagnosis, or treatment.” Add emergency warning if symptoms suggest heart attack/stroke. Follow privacy-first design because health data is sensitive. WHO recommends human oversight, transparency, privacy, and safety for AI in health. FDA guidance treats some clinical decision support tools as regulated medical software depending on use, so add disclaimers and audit logs. India DPDP Act requires lawful processing and protection of digital personal data. Use consent before collecting health data. 
+References considered: WHO AI health ethics, FDA CDS guidance, India DPDP Act, Razorpay subscription/payment docs.
+
+TECH STACK:
+Frontend:
+- Next.js latest stable
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Framer Motion
+- Lucide Icons
+- Recharts for charts
+- Responsive design for mobile, tablet, desktop
+
+Backend:
+- Node.js / Next.js API routes OR Express.js
+- Prisma ORM
+- PostgreSQL preferred, MySQL optional through environment config
+- JWT/Auth.js authentication
+- bcrypt password hashing
+- Role-based access control
+- Razorpay payment integration for India
+- Cloudinary or local upload support for images
+- Environment variables for all secrets
+
+-----------------------------------
+DETAILED FILE & FOLDER STRUCTURE (IMPORTANT)
+-----------------------------------
+
+Follow a clean modular structure:
+
+ROOT:
+
+/app                → Next.js frontend (App Router)
+/components         → Reusable UI components
+/lib                → Utility functions, API helpers
+/hooks              → Custom React hooks
+/styles             → Global styles
+
+/server             → Backend logic
+  /routes           → API route definitions
+  /controllers      → Business logic handlers
+  /services         → Core logic (AI, payments, scoring)
+  /middlewares      → Auth, role checks, validation
+
+/prisma             → Prisma schema & migrations
+/public             → Static assets (logo, images)
+/uploads            → User uploads (if local storage used)
+
+/types              → TypeScript types/interfaces
+
+-----------------------------------
+FRONTEND FILES (IMPORTANT)
+-----------------------------------
+
+/app/page.tsx → Homepage
+/app/login/page.tsx → Login
+/app/signup/page.tsx → Signup
+
+/app/dashboard/layout.tsx → Dashboard layout (sidebar)
+/app/dashboard/page.tsx → User dashboard
+
+/app/dashboard/ai-test/page.tsx → AI test form
+/app/dashboard/history/page.tsx → AI history
+/app/dashboard/subscription/page.tsx → Plans & billing
+/app/dashboard/support/page.tsx → Support tickets
+
+/app/admin/page.tsx → Admin dashboard
+/app/admin/users/page.tsx → Manage users
+/app/admin/ai/page.tsx → AI management
+/app/admin/blogs/page.tsx → Blog management
+
+-----------------------------------
+COMPONENT STRUCTURE
+-----------------------------------
+
+/components/ui → Buttons, cards, inputs
+/components/layout → Navbar, sidebar
+/components/dashboard → Cards, charts
+/components/ai → Form steps, result cards
+
+-----------------------------------
+BACKEND FILES (IMPORTANT)
+-----------------------------------
+
+/server/routes/auth.routes.ts
+/server/routes/ai.routes.ts
+/server/routes/user.routes.ts
+/server/routes/admin.routes.ts
+/server/routes/blog.routes.ts
+/server/routes/ticket.routes.ts
+
+/server/controllers/auth.controller.ts
+/server/controllers/ai.controller.ts
+/server/controllers/user.controller.ts
+
+/server/services/ai.service.ts → AI logic
+/server/services/scoring.service.ts → risk calculation
+/server/services/payment.service.ts → Razorpay
+
+/server/middlewares/auth.middleware.ts
+/server/middlewares/role.middleware.ts
+
+-----------------------------------
+PRISMA FILE
+-----------------------------------
+
+/prisma/schema.prisma → All database models
+
+-----------------------------------
+ENV FILE
+-----------------------------------
+
+.env should contain:
+
+DATABASE_URL=
+JWT_SECRET=
+RAZORPAY_KEY_ID=
+RAZORPAY_SECRET=
+AI_API_KEY=
+
+-----------------------------------
+IMPORTANT RULES
+-----------------------------------
+
+- Keep frontend and backend separated logically
+- Use services for reusable logic
+- Do NOT put business logic directly in routes
+- Keep code modular and scalable
+
+DATABASE:
+Create Prisma schema with these tables:
+- User
+- Role
+- Permission
+- SubscriptionPlan
+- Subscription
+- CreditTransaction
+- AiTest
+- AiQuestion
+- AiDiseaseModule
+- AiTrainingDataset
+- Blog
+- BlogCategory
+- News
+- Comment
+- SupportTicket
+- TicketReply
+- Notification
+- AuditLog
+- Payment
+- SiteSetting
+
+USER ROLES:
+1. User / Patient:
+- Signup/login
+- 100 free credits monthly
+- 1 AI test costs 50 credits
+- Can buy plans
+- Can view AI test history
+- Can create support ticket
+- Cannot contact admin directly
+- Can comment on blogs/news
+- Can update profile
+- Can download AI report as PDF
+
+2. Moderator:
+- Login through same login page
+- Access moderator dashboard
+- Can manage blogs, news, comments depending on assigned permissions
+- Can reply to user support tickets
+- Can generate internal token for admin escalation
+- Can forward user issue to admin using token
+- Can access AI unlimited for internal use
+- If assigned AI permission, can upload AI training data, edit AI questions, manage disease modules
+- Cannot create admin unless permission is given
+- Cannot change pricing unless admin allows
+
+3. Admin:
+- Full dashboard access
+- Can add/edit/delete moderators
+- Can add another admin
+- Can assign role permissions to moderators
+- Can manage users
+- Can manage AI questions and disease modules
+- Can manage training datasets
+- Can update pricing/plans/credits
+- Can view analytics, revenue, usage, tickets, audit logs
+- Can reply to moderator-generated support tokens
+- Can manage website content, blogs, news, comments, homepage content
+
+SUBSCRIPTION PLANS:
+Free:
+- 100 credits/month
+- 50 credits per test
+- Basic general health screening only
+
+Basic:
+- ₹249/month
+- 500 credits/month
+- 50 credits per test
+- No extra disease-specific analysis
+
+Pro:
+- ₹799/month
+- 1000 credits/month
+- Can add up to 5 disease concerns/symptoms
+- More detailed analysis with disease-specific questions
+
+Pro Plus:
+- ₹4999/month
+- 100000 credits/month
+- For doctors/professionals
+- Advanced reasoning model mode
+- Detailed reports
+- Priority support
+- Still show medical disclaimer
+
+AI HEALTH ASSESSMENT MODULE:
+Build the UI and backend structure for AI-based risk screening, but keep AI provider configurable.
+Before final AI setup, ask me which AI I want to use:
+- OpenAI API
+- Gemini API
+- Local Ollama model
+- Custom trained model
+- Hybrid model
+
+Patient input parameters:
+Basic required:
+- Age
+- Gender
+- Height
+- Weight
+- BMI auto-calculated
+- Blood pressure systolic/diastolic
+- Resting heart rate
+- Blood sugar level
+- Cholesterol level if known
+- Smoking status
+- Alcohol use
+- Physical activity level
+- Diet type
+- Sleep duration
+- Stress level
+- Family history of heart disease
+- Existing diseases
+- Current medications
+- Chest pain yes/no
+- Breathlessness yes/no
+- Dizziness/fainting yes/no
+- Swelling in legs yes/no
+- Fatigue level
+
+For cardiac-specific:
+- Chest pain location
+- Pain duration
+- Pain during exertion
+- Pain radiating to arm/jaw/back
+- Shortness of breath
+- Palpitations
+- ECG available yes/no
+- Previous heart attack/stroke
+- Diabetes
+- Hypertension
+- Obesity
+- Kidney disease
+
+AI output:
+- Risk level: Low / Moderate / High / Emergency
+- Explanation in simple language
+- Key risk factors
+- Suggested next steps
+- Recommended doctor consultation
+- Emergency warning if needed
+- Confidence score
+- PDF report download
+- Save report in user history
+
+Never show final diagnosis. Use “possible risk indicators”.
+
+SUPPORT TOKEN FLOW:
+- User creates support ticket.
+- Moderator replies normally.
+- If admin input is needed, moderator creates escalation token.
+- Admin sees token without direct user contact.
+- Admin replies internally.
+- Moderator sends final response to user.
+- All actions saved in AuditLog.
+
+WEBSITE PAGES:
+Public:
+- Home
+- About NIRAMAYAH
+- Technology
+- AI Diagnosis
+- Pricing
+- Blogs
+- News
+- Contact
+- Login
+- Signup
+- Privacy Policy
+- Terms
+- Medical Disclaimer
+
+Dashboard:
+User dashboard:
+- Overview
+- Start AI Test
+- Test History
+- Credits
+- Subscription
+- Support Tickets
+- Profile
+
+Moderator dashboard:
+- Overview
+- Blogs
+- News
+- Comments
+- Support Tickets
+- Token Escalations
+- AI Management if permission enabled
+- Profile
+
+Admin dashboard:
+- Overview analytics
+- Users
+- Moderators/Admins
+- Roles & Permissions
+- AI Model Management
+- Disease Modules
+- Training Dataset
+- Blogs
+- News
+- Comments
+- Support Tokens
+- Pricing & Plans
+- Payments
+- Credit Management
+- Audit Logs
+- Site Settings
+
+UI/UX STYLE:
+Brand name: NIRAMAYAH
+Tagline: Precision Cardiac Diagnosis
+Theme: Clean medical-tech, professional, trustworthy
+Colors:
+- Navy: #081D3A
+- Medical Green: #008060
+- Saffron Orange: #FF8A00
+- White: #FFFFFF
+- Light Background: #F5F7FA
+- Gray Text: #5B6472
+
+Typography:
+- Heading: elegant serif or Playfair Display style
+- Body: Inter or modern sans-serif
+
+Design:
+- Logo in circular form in navbar
+- White and navy layout
+- Green CTA buttons
+- Saffron highlights
+- Rounded cards
+- Medical glassmorphism dashboard cards
+- Clean charts
+- Smooth animations
+- Fully responsive
+- Professional healthcare startup feel
+
+HOMEPAGE STRUCTURE:
+1. Navbar with circular logo, Home, About, AI Diagnosis, Blogs, Pricing, Contact, Login, Sign Up
+2. Hero section:
+   Title: “NIRAMAYAH – Precision Cardiac Diagnosis”
+   Subtitle: “Enhancing Cardiac Diagnosis Through Non-Invasive Innovation”
+   CTA: “Start AI Risk Assessment”
+   CTA 2: “View Technology”
+3. Add poster/project showcase using attached poster
+4. Feature cards:
+   - Non-invasive innovation
+   - AI-powered screening
+   - Risk assessment reports
+   - Secure health data
+5. How it works:
+   - Enter health parameters
+   - AI analyzes risk indicators
+   - Get screening report
+   - Consult professional if needed
+6. Pricing cards
+7. Blog preview
+8. Contact section
+9. Footer with disclaimer
+
+DASHBOARD UI:
+Create modern sidebar dashboard:
+- Dark navy sidebar
+- Circular logo on top
+- Role-based menu items
+- Top bar with notifications/profile
+- Cards for credits, tests, plan, tickets
+- Charts for AI usage, subscription, revenue for admin
+- Tables with search/filter/sort
+- Modal forms
+- Toast notifications
+
+SECURITY:
+- Password hashing
+- JWT/session auth
+- Role-based middleware
+- CSRF protection where needed
+- Input validation with Zod
+- Rate limiting for login and AI tests
+- Audit logs
+- Health data encryption where possible
+- Secure environment variables
+- No hardcoded API keys
+- Consent checkbox before AI assessment
+
+-----------------------------------
+LOGGING & SAFETY SYSTEM
+-----------------------------------
+
+- Log every AI request and response
+- Store user input + AI output
+- Maintain audit trail for moderators/admin
+- Track repeated high-risk users
+- Prevent abuse (rate limit AI usage)
+
+Add:
+- Consent checkbox before AI test
+- Data privacy notice before submission
+
+PAYMENT:
+Use Razorpay integration.
+Admin can edit plan price, credits, active/inactive plan.
+Webhook should update payment/subscription status.
+Keep test mode and production mode configurable.
+
+BLOG/NEWS:
+- Admin/moderator can create, edit, delete, publish/unpublish
+- Rich text editor
+- Image upload
+- SEO title/meta description
+- Categories/tags
+- Comments with moderation
+
+LOCAL + PUBLIC DEPLOYMENT:
+Provide:
+- .env.example
+- README.md
+- Local setup commands
+- Database migration commands
+- Seed admin account
+- Build command
+- Deployment guide for Vercel/Render/Railway
+- Dockerfile and docker-compose optional
+
+SEED DATA:
+Create default admin:
+email: admin@niramayah.in
+password: Niramayah@4
+Force password change after first login.
+
+Create default plans:
+Free, Basic, Pro, Pro Plus with prices and credits mentioned above.
+
+IMPORTANT:
+Generate clean production-level code.
+Use modular folder structure.
+Use reusable components.
+Add comments only where needed.
+Make UI polished, not basic.
+Ask me for AI provider details before connecting real AI.
+Until then, implement mock AI response with clearly labeled demo mode.
+
+AI SYSTEM LOGIC (VERY IMPORTANT):
+
+The AI system must behave like a structured medical screening engine.
+
+DO NOT build a normal chatbot.
+
+Instead:
+
+1. Create a step-by-step form-based AI input system
+2. Collect structured data from user
+3. Send data to AI model
+4. AI processes and returns structured JSON output
+
+Expected AI Response Format:
+
+{
+  "risk_level": "Low | Moderate | High | Emergency",
+  "summary": "Simple explanation in user-friendly language",
+  "key_risk_factors": ["factor1", "factor2"],
+  "possible_conditions": ["Not diagnosis, only possibilities"],
+  "recommendation": "Next steps (consult doctor, lifestyle change etc.)",
+  "urgency": "Normal | Attention Needed | Immediate Care",
+  "confidence_score": "percentage"
+}
+
+If AI is not connected:
+Create MOCK AI that simulates realistic output.
+
+Important:
+- Never say “you have disease”
+- Always say “possible risk”
+- Add warning for high risk cases
+
+Emergency Rule:
+If symptoms match:
+- chest pain + breathlessness + sweating
+Then show:
+“⚠️ Possible cardiac emergency. Seek immediate medical help.”
+
+UI Requirement:
+- Show results in cards
+- Color code:
+  Green = Low
+  Yellow = Moderate
+  Orange = High
+  Red = Emergency
+
+AI QUESTION SYSTEM (CRITICAL):
+
+The AI must NOT rely on random or generic inputs.
+It must follow a structured multi-step questionnaire designed for cardiac risk assessment.
+
+Build a DYNAMIC QUESTION ENGINE with these sections:
+
+-----------------------------------
+STEP 1: BASIC PROFILE
+-----------------------------------
+- Age (number)
+- Gender (Male / Female / Other)
+- Height (cm)
+- Weight (kg)
+- BMI (auto calculated)
+
+-----------------------------------
+STEP 2: VITAL SIGNS
+-----------------------------------
+- Blood Pressure (Systolic / Diastolic)
+- Resting Heart Rate (bpm)
+- Blood Sugar Level (optional)
+- Cholesterol Level (optional)
+
+-----------------------------------
+STEP 3: LIFESTYLE FACTORS
+-----------------------------------
+- Smoking (Yes / No / Occasionally)
+- Alcohol Consumption (None / Moderate / Heavy)
+- Physical Activity Level (Low / Moderate / High)
+- Diet Type (Healthy / Mixed / Junk-heavy)
+- Sleep Duration (hours)
+- Stress Level (Low / Medium / High)
+
+-----------------------------------
+STEP 4: MEDICAL HISTORY
+-----------------------------------
+- Family history of heart disease (Yes/No)
+- Diabetes (Yes/No)
+- Hypertension (Yes/No)
+- Obesity (Yes/No)
+- Kidney disease (Yes/No)
+- Previous heart attack or stroke (Yes/No)
+- Current medications (text input)
+
+-----------------------------------
+STEP 5: CURRENT SYMPTOMS (VERY IMPORTANT)
+-----------------------------------
+Ask clearly and separately:
+
+- Chest pain? (Yes/No)
+  → If Yes:
+    - Type (sharp / pressure / burning)
+    - Duration (minutes)
+    - Trigger (rest / activity)
+    - Radiates to arm/jaw/back? (Yes/No)
+
+- Shortness of breath? (Yes/No)
+- Palpitations (irregular heartbeat)? (Yes/No)
+- Dizziness or fainting? (Yes/No)
+- Swelling in legs/feet? (Yes/No)
+- Fatigue level (Low/Medium/High)
+- Excessive sweating? (Yes/No)
+
+-----------------------------------
+STEP 6: OPTIONAL ADVANCED (PRO/PRO+ USERS)
+-----------------------------------
+- ECG available? (Yes/No upload)
+- Heart rate variability data (optional)
+- Oxygen saturation (SpO2)
+- Known diagnosis (if any)
+- Add up to 5 specific disease concerns:
+  (e.g., coronary artery disease, arrhythmia, heart failure)
+
+-----------------------------------
+AI INTERNAL PROCESSING (MISSING PIECE)
+-----------------------------------
+
+When sending user data to AI model:
+
+- Convert all form inputs into structured JSON
+- Validate all inputs before sending to AI (no null/invalid values)
+- Normalize values (e.g., yes/no → boolean, ranges → numeric)
+- Combine:
+  - User inputs
+  - Risk score (from rule-based system)
+  - Key symptom flags
+
+Then send to AI using this SYSTEM PROMPT:
+
+"You are a medical risk assessment assistant.
+
+You DO NOT provide diagnosis.
+You ONLY provide risk assessment.
+
+Analyze the structured patient data and:
+
+1. Determine risk level
+2. Identify key contributing factors
+3. Explain results in simple language
+4. Suggest safe next steps
+5. Warn clearly if emergency indicators are present
+
+Rules:
+- Never say 'you have a disease'
+- Always say 'possible risk' or 'indicators suggest'
+- Be conservative and safe
+- Prioritize user safety over accuracy
+
+Return output ONLY in JSON format."
+
+-----------------------------------
+
+LOGIC RULES:
+
+1. The system must be STEP-BY-STEP (multi-screen form)
+2. Do NOT show all questions at once
+3. Show follow-up questions dynamically based on answers
+4. Validate inputs before moving to next step
+5. Save partial progress (auto-save)
+
+-----------------------------------
+
+SCORING + ANALYSIS LOGIC:
+
+Create a rule-based + AI hybrid system:
+
+Assign risk weights:
+- Age > 50 → +2
+- Smoking → +2
+- Hypertension → +2
+- Diabetes → +2
+- Chest pain → +4
+- Radiating pain → +4
+- Breathlessness → +3
+- High cholesterol → +2
+- Family history → +2
+- Sedentary lifestyle → +1
+
+Then:
+- 0–4 → Low Risk
+- 5–9 → Moderate Risk
+- 10–15 → High Risk
+- 16+ → Emergency Risk
+
+Then send data to AI for explanation layer.
+
+-----------------------------------
+
+CRITICAL EMERGENCY RULE:
+
+If:
+- Chest pain = YES
+AND
+- Breathlessness = YES
+AND
+- Sweating = YES
+
+THEN:
+Immediately override AI and show:
+
+"⚠️ HIGH RISK: Possible cardiac emergency. Seek immediate medical help."
+
+
+-----------------------------------
+SCORING SYSTEM IMPROVEMENT
+-----------------------------------
+
+- Store all scoring weights in database (editable by admin)
+- Allow dynamic updates without code changes
+- Support disease-specific scoring modules
+
+Final decision = 
+Rule-based score + AI interpretation layer
+
+This ensures:
+- Consistency
+- Flexibility
+- Scalability
+
+-----------------------------------
+
+UI REQUIREMENTS:
+
+- Progress bar (Step 1 → Step 6)
+- Clean medical form UI
+- Icons for each section
+- Mobile-friendly
+- Save & resume later
+- Show summary before submission
+
+-----------------------------------
+
+FINAL OUTPUT PAGE:
+
+Display:
+
+1. Risk Level (color-coded)
+2. Summary (simple language)
+3. Key risk factors
+4. Possible conditions (NOT diagnosis)
+5. Recommended action
+6. Urgency level
+7. Download PDF report
+8. Save to dashboard history
+9. Medical disclaimer (always visible)
+
+-----------------------------------
+
+IMPORTANT:
+
+- Never claim "you have disease"
+- Always use "possible risk" wording
+- Always show disclaimer
+
+-----------------------------------
+
+ADMIN CONTROL:
+
+Admin and AI-enabled moderators can:
+- Edit questions
+- Add/remove parameters
+- Adjust scoring weights
+- Add disease-specific modules
+
+-----------------------------------
+
+If unsure about medical logic:
+Use WHO-style conservative risk estimation approach.
+Prioritize safety over accuracy.
+
+UI/UX DIRECTION (STRICT):
+
+Design must follow a clean medical-tech SaaS style.
+
+Layout:
+- Sidebar dashboard (left)
+- Top navbar (notifications + profile)
+- Main content with cards and sections
+
+Style:
+- Minimal
+- Professional
+- No flashy gradients
+- No gaming-style UI
+- Focus on clarity and readability
+
+Colors:
+- Navy (primary background)
+- White (content areas)
+- Green (positive / safe)
+- Orange (warning)
+- Red (high risk)
+- Gray (text)
+
+Components:
+- Cards with soft shadows
+- Clean tables
+- Step-based forms
+- Progress indicators
+- Charts for analytics
+
+User Experience:
+- Simple for non-technical users
+- Guided step-by-step AI test
+- Clear CTA buttons
+- No clutter
+
+Inspiration:
+- Stripe Dashboard
+- Vercel Dashboard
+- Notion (clean layout)
+- Medical dashboards
+
+-----------------------------------
+UI DETAIL ENHANCEMENT (SMALL BUT IMPORTANT)
+-----------------------------------
+
+Ensure UI follows:
+
+- Proper spacing (not cramped)
+- Consistent alignment
+- Readable font sizes
+- Accessible color contrast
+- Mobile-first responsiveness
+
+Dashboard should feel like:
+- Stripe dashboard
+- Vercel dashboard
+
+Focus on:
+- Clarity over decoration
+- Fast navigation
+- Clean data presentation
+
+DO NOT:
+- Overdesign
+- Use unnecessary animations
+- Make it look like a social media app
+
+Before building the AI integration, ask me:
+- Which AI provider I want (OpenAI, Gemini, Ollama, Custom)
+- Whether I want local or API-based AI
+
+Before generating code, summarize your understanding of:
+1. What NIRAMAYAH does
+2. How the AI works
+3. What questions will be asked
+4. How risk is calculated
+
+Then wait for my confirmation.

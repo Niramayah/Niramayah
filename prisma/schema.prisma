@@ -1,0 +1,368 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String            @id @default(uuid())
+  email              String            @unique
+  password           String
+  name               String
+  role               Role              @default(USER)
+  credits            Int               @default(100)
+  isUnlimitedCredits Boolean           @default(false)
+  profileImage       String?
+  isCoreMember       Boolean           @default(false)
+  coreRoleTitle      String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  mustChangePass     Boolean           @default(false)
+  isVerified         Boolean           @default(false)
+  otpCode            String?
+  otpExpires         DateTime?
+  memberStatus       MemberStatus      @default(ACTIVE)
+  bio                String?           @db.Text
+  githubUrl          String?
+  profile            Profile?
+
+  aiTests            AiTest[]
+  subscriptions      Subscription[]
+  transactions       CreditTransaction[]
+  tickets            SupportTicket[]   @relation("UserTickets")
+  assignedTickets    SupportTicket[]   @relation("AssignedTickets")
+  escalatedTickets   SupportTicket[]   @relation("EscalatedTickets")
+  ticketReplies      TicketReply[]
+  comments           Comment[]
+  auditLogs          AuditLog[]        @relation("UserAuditLogs")
+  permissions        UserPermission[]
+  planOverrides      UserPlanOverride[]
+  notifications      Notification[]
+  datasets           AiTrainingDataset[]
+  reports            SavedReport[]
+  blogs              Blog[]            @relation("BlogAuthor")
+  publishedBlogs     Blog[]            @relation("BlogPublisher")
+  news               News[]            @relation("NewsAuthor")
+  publishedNews      News[]            @relation("NewsPublisher")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String   @db.Text
+  type      String   // e.g., "INFO", "CREDIT_DEBIT", "SYSTEM"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum MemberStatus {
+  LEADER
+  ACTIVE
+  GHOST
+}
+
+model UserPermission {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permissionKey String   // e.g., "AI_MANAGE", "USER_DELETE", etc.
+  enabled       Boolean  @default(true)
+
+  @@unique([userId, permissionKey])
+}
+
+model Profile {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  age              Int?
+  gender           String?
+  height           Float?
+  weight           Float?
+  bloodType        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model SubscriptionPlan {
+  id               String         @id @default(uuid())
+  name             String         @unique
+  description      String?
+  price            Float
+  credits          Int
+  features         Json?
+  isActive         Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  subscriptions    Subscription[]
+  overrides        UserPlanOverride[]
+}
+
+model Subscription {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId           String
+  plan             SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
+  startDate        DateTime         @default(now())
+  endDate          DateTime
+  isActive         Boolean          @default(true)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model UserPlanOverride {
+  id          String           @id @default(uuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId      String
+  plan        SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  customPrice Float?
+  isFree      Boolean          @default(false)
+  startDate   DateTime         @default(now())
+  endDate     DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([userId, planId])
+}
+
+model CreditTransaction {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount           Int
+  type             String   // "CREDIT" or "DEBIT"
+  description      String
+  createdAt        DateTime @default(now())
+}
+
+model AiTest {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inputData        Json     // The complete input payload
+  riskLevel        String   // "Low", "Moderate", "High", "Emergency"
+  summary          String   @db.Text
+  keyRiskFactors   Json
+  possibleConditions Json
+  recommendation   String   @db.Text
+  urgency          String
+  confidenceScore  Float?
+  isSaved          Boolean  @default(false)
+  patientName      String?
+  patientRef       String?  @unique
+  testSource       String?  // "ADMIN_TEST", "MODERATOR_TEST", etc.
+  testMode         Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  ai_interaction_log Json?
+}
+
+model Blog {
+  id               String         @id @default(uuid())
+  title            String
+  slug             String         @unique
+  content          String         @db.Text
+  published        Boolean        @default(false)
+  categoryId       String?
+  category         BlogCategory?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  authorId         String?
+  author           User?          @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  status           String         @default("DRAFT") // DRAFT, SUBMITTED, RETURNED, PUBLISHED, REJECTED, DELETED
+  feedback         String?        @db.Text
+  publisherId      String?
+  publisher        User?          @relation("BlogPublisher", fields: [publisherId], references: [id], onDelete: SetNull)
+  publishedAt      DateTime?
+  deletedAt        DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  comments         Comment[]
+}
+
+model BlogCategory {
+  id               String   @id @default(uuid())
+  name             String   @unique
+  blogs            Blog[]
+}
+
+model News {
+  id               String   @id @default(uuid())
+  title            String
+  slug             String   @unique
+  content          String   @db.Text
+  excerpt          String?
+  image            String?
+  status           String   @default("DRAFT") // DRAFT, SUBMITTED, REVIEW, RETURNED, PUBLISHED, ARCHIVED
+  feedback         String?  @db.Text
+  authorId         String?
+  author           User?          @relation("NewsAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  publisherId      String?
+  publisher        User?          @relation("NewsPublisher", fields: [publisherId], references: [id], onDelete: SetNull)
+  publishedAt      DateTime?
+  deletedAt        DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  comments         Comment[]
+}
+
+model Comment {
+  id               String   @id @default(uuid())
+  content          String
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blogId           String?
+  blog             Blog?    @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  newsId           String?
+  news             News?    @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+}
+
+model SupportTicket {
+  id                  String        @id @default(uuid())
+  userId              String
+  user                User          @relation("UserTickets", fields: [userId], references: [id], onDelete: Cascade)
+  subject             String
+  message             String?       @db.Text
+  category            String        @default("OTHER") // "BILLING", "DIAGNOSIS", "ACCOUNT", "TECHNICAL", "OTHER"
+  status              String        @default("OPEN") // "OPEN", "IN_PROGRESS", "ESCALATED", "RESOLVED", "CLOSED"
+  assignedModeratorId String?
+  assignedModerator   User?         @relation("AssignedTickets", fields: [assignedModeratorId], references: [id], onDelete: SetNull)
+  escalatedToAdminId  String?
+  escalatedToAdmin    User?         @relation("EscalatedTickets", fields: [escalatedToAdminId], references: [id], onDelete: SetNull)
+  escalatedTo         String?       // "ADMIN", "SUPER_ADMIN", etc.
+  escalationToken     String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  replies             TicketReply[]
+  tokens              SupportToken[]
+}
+
+model TicketReply {
+  id               String        @id @default(uuid())
+  ticketId         String
+  ticket           SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message          String        @db.Text
+  isInternal       Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+}
+
+model SupportToken {
+  id               String        @id @default(uuid())
+  token            String        @unique
+  ticketId         String
+  ticket           SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  generatedById    String
+  assignedAdminId  String?
+  solution         String?       @db.Text
+  status           String        @default("PENDING") // "PENDING", "RESOLVED"
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+model AuditLog {
+  id               String   @id @default(uuid())
+  userId           String?
+  user             User?    @relation("UserAuditLogs", fields: [userId], references: [id], onDelete: SetNull)
+  action           String
+  details          String?  @db.Text
+  createdAt        DateTime @default(now())
+}
+
+model SiteSetting {
+  id               String   @id @default(uuid())
+  key              String   @unique
+  value            String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Payment {
+  id               String   @id @default(uuid())
+  razorpayOrderId  String?
+  razorpayPaymentId String?
+  amount           Float
+  currency         String   @default("INR")
+  status           String   // "PENDING", "COMPLETED", "FAILED"
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model AiQuestion {
+  id               String   @id @default(uuid())
+  step             Int
+  section          String
+  questionText     String
+  type             String   // "number", "boolean", "select", "text"
+  options          Json?
+  dependsOn        String?  // ID of another question
+  dependencyValue  String?
+  weight           Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model AiDiseaseModule {
+  id               String   @id @default(uuid())
+  name             String   @unique
+  description      String?
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model AiTrainingDataset {
+  id               String   @id @default(uuid())
+  name             String
+  dataUrl          String
+  sourceType       String   @default("URL") // "FILE" or "URL"
+  uploadedById     String?
+  uploadedBy       User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploadedAt       DateTime @default(now())
+}
+
+model SavedReport {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type               String   // "MODERATOR_TEST" or "LIVE"
+  patientName        String?
+  patientRef         String   @unique
+  riskLevel          String?
+  summary            String?  @db.Text
+  keyFactors         Json?
+  possibleConditions Json?
+  recommendations    String?  @db.Text
+  inputData          Json
+  result             Json
+  createdAt          DateTime @default(now())
+  ai_interaction_log Json?
+}
+model SiteContent {
+  id              String   @id @default(uuid())
+  title           String
+  description     String?  @db.Text
+  mediaUrl        String?  // Image or Video URL
+  mediaType       String   @default("IMAGE") // IMAGE, VIDEO
+  caption         String?
+  location        String   // HOMEPAGE, BLOG_SIDEBAR, NEWS_BANNER, etc.
+  link            String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
